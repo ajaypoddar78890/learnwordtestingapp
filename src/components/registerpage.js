@@ -29,10 +29,14 @@ const RegisterPage = () => {
 
       // Step 2: Synchronize with LearnWorlds
       console.log("Attempting to sync with LearnWorlds for email:", email);
-      await syncWithLearnWorlds(email);
+      const isSynced = await syncWithLearnWorlds(email, password);
 
-      alert("User registered successfully!");
-      console.log("User registered successfully and synced with LearnWorlds");
+      if (isSynced) {
+        alert("User registered successfully!");
+        console.log("User registered successfully and synced with LearnWorlds");
+      } else {
+        alert("Registration completed, but sync with LearnWorlds failed.");
+      }
     } catch (error) {
       console.error("Registration failed", error);
       alert("Registration failed. Please try again.");
@@ -72,18 +76,19 @@ const RegisterPage = () => {
     }
   };
 
-  const syncWithLearnWorlds = async (email) => {
+  const syncWithLearnWorlds = async (email, password) => {
     try {
       const response = await fetch(
-        "https://dev-5w6hgl3kwgr0nxwi.us.auth0.com/", // Replace with the correct endpoint for LearnWorlds
+        "https://academy.setup4impact.com/admin/api/users", // Adjust this URL if necessary
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer YOUR_API_TOKEN`, // Use your actual API token
           },
           body: JSON.stringify({
             email: email,
-            // Add any other necessary user data here
+            password: password, // Include any other necessary user data here
           }),
         }
       );
@@ -92,73 +97,80 @@ const RegisterPage = () => {
       if (!response.ok) {
         const errorResponse = await response.json();
         console.error("LearnWorlds sync error response:", errorResponse);
-        throw new Error("Error syncing with LearnWorlds");
+        throw new Error(
+          "Error syncing with LearnWorlds: " + errorResponse.message
+        );
       }
+
+      console.log("User registered successfully with LearnWorlds");
+      return true; // Return true on successful registration
     } catch (error) {
       console.error("Error in syncWithLearnWorlds function:", error);
-      throw error;
+      throw error; // Rethrow to handle in the calling function
     }
   };
 
   return (
-    <form
-      onSubmit={handleRegister}
-      className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg rounded-lg p-8 max-w-md w-full mx-auto"
-    >
-      <h1 className="text-4xl font-bold text-center text-white mb-8">
-        Join Us!
-      </h1>
-
-      <div className="mb-6">
-        <label
-          className="block text-white text-sm font-semibold mb-2"
-          htmlFor="email"
-        >
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="shadow border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-500"
-          required
-          placeholder="Enter your email"
-        />
-      </div>
-
-      <div className="mb-6">
-        <label
-          className="block text-white text-sm font-semibold mb-2"
-          htmlFor="password"
-        >
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="shadow border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-500"
-          required
-          placeholder="Create a password"
-        />
-      </div>
-
-      <button
-        type="submit"
-        className="bg-blue-600 text-white font-semibold py-3 rounded-lg w-full hover:bg-blue-700 transition duration-200 transform hover:scale-105"
+    <>
+      <form
+        onSubmit={handleRegister}
+        className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg rounded-lg p-8 max-w-md w-full mx-auto"
       >
-        Register
-      </button>
+        <h1 className="text-4xl font-bold text-center text-white mb-8">
+          Join Us!
+        </h1>
 
-      <p className="mt-4 text-center text-white text-sm">
-        Already have an account?{" "}
-        <a href="/login" className="underline hover:text-blue-300">
-          Log in
-        </a>
-      </p>
-    </form>
+        <div className="mb-6">
+          <label
+            className="block text-white text-sm font-semibold mb-2"
+            htmlFor="email"
+          >
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="shadow border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-500"
+            required
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div className="mb-6">
+          <label
+            className="block text-white text-sm font-semibold mb-2"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="shadow border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-500"
+            required
+            placeholder="Create a password"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white font-semibold py-3 rounded-lg w-full hover:bg-blue-700 transition duration-200 transform hover:scale-105"
+        >
+          Register
+        </button>
+
+        <p className="mt-4 text-center text-white text-sm">
+          Already have an account?{" "}
+          <a href="/login" className="underline hover:text-blue-300">
+            Log in
+          </a>
+        </p>
+      </form>
+    </>
   );
 };
 

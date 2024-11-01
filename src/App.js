@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import RegisterPage from "./components/registerpage";
 import Home from "./components/home"; // Import your Home component
 
-const domain = "dev-5w6hgl3kwgr0nxwi.us.auth0.com"; // Replace with your domain
+const domain = "https://dev-5w6hgl3kwgr0nxwi.us.auth0.com"; // Replace with your domain
 const clientId = "2zSH3jU53PkBUC06AIIUklZ1tDRi75bu"; // Replace with your Client ID
 
 const App = () => {
