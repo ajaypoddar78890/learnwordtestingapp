@@ -42,14 +42,18 @@ const RegisterPage = () => {
       alert("Registration failed. Please try again.");
     }
   };
-
   const registerUser = async (email, password) => {
     try {
-      const token = await getAccessTokenSilently();
+      // Include audience and scope to get access to Auth0 Management API
+      const token = await getAccessTokenSilently({
+        audience: "https://dev-5w6hgl3kwgr0nxwi.us.auth0.com/api/v2/", // Replace with your actual Auth0 domain
+        scope: "create:users update:users read:users",
+      });
+
       console.log("Obtained Auth0 access token:", token);
 
       const response = await fetch(
-        `https://dev-5w6hgl3kwgr0nxwi.us.auth0.com/api/v2/users`,
+        `https://dev-5w6hgl3kwgr0nxwi.us.auth0.com/api/v2/`, // Replace with your actual Auth0 domain may need to write in full form url
         {
           method: "POST",
           headers: {
@@ -59,7 +63,7 @@ const RegisterPage = () => {
           body: JSON.stringify({
             email: email,
             password: password,
-            connection: "Username-Password-Authentication",
+            connection: "Username-Password-Authentication", // Replace if using a different connection
           }),
         }
       );
@@ -79,21 +83,23 @@ const RegisterPage = () => {
   const syncWithLearnWorlds = async (email, password) => {
     try {
       const response = await fetch(
-        "https://academy.setup4impact.com/admin/api/users", // Adjust this URL if necessary
+        "https://academy.setup4impact.com/f/signin/openid?provider=1730474031405109",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer YOUR_API_TOKEN`, // Use your actual API token
+            Authorization: `Bearer YOUR_API_TOKEN`, // Replace with actual API token
           },
           body: JSON.stringify({
             email: email,
-            password: password, // Include any other necessary user data here
+            password: password,
+            full_name: "John Doe", // Add the full name or first_name, last_name fields if required
+            role: "student", // Specify the role or level, if applicable
+            language: "en", // Preferred language (optional)
           }),
         }
       );
 
-      console.log("LearnWorlds sync response status:", response.status);
       if (!response.ok) {
         const errorResponse = await response.json();
         console.error("LearnWorlds sync error response:", errorResponse);
@@ -103,10 +109,10 @@ const RegisterPage = () => {
       }
 
       console.log("User registered successfully with LearnWorlds");
-      return true; // Return true on successful registration
+      return true;
     } catch (error) {
       console.error("Error in syncWithLearnWorlds function:", error);
-      throw error; // Rethrow to handle in the calling function
+      throw error;
     }
   };
 

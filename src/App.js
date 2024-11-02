@@ -13,7 +13,7 @@ const App = () => {
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        redirect_uri: "http://localhost:3000",
+        redirect_uri: `https://academy.setup4impact.com/f/signin/openid?provider=1730474031405109`,
       }}
     >
       <Router>
